@@ -40,6 +40,7 @@ STAR star[MAXSTAR];
 int score;
 int speed;
 IMAGE img[10];
+char p[15];
 
 //函数声明
 int menu();
@@ -51,6 +52,7 @@ void death();
 void load();
 void InitStar(int);
 void MoveStar(int);
+char *numtostr(int);
 
 //Game类
 class Game
@@ -82,9 +84,6 @@ public:
 
 	void shoot();
 };
-
-
-
 
 //函数定义
 void Game::playing()
@@ -174,6 +173,7 @@ void Game::playing()
 						players[j].y = -1;
 						players[i].x = -1;
 						players[i].y = -1;
+						score += 20;
 					}
 				}
 			}
@@ -210,9 +210,6 @@ void Game::drawall()
 			putpixel((int)star[i].x, star[i].y, star[i].color);
 	}
 	countstar++;
-	//draw player
-	putimage(players[0].x, players[0].y, &img[2], SRCAND);
-	putimage(players[0].x, players[0].y, &img[1], SRCPAINT);
 	//draw enemy
 	for (int i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++)
 	{
@@ -222,6 +219,9 @@ void Game::drawall()
 			putimage(players[i].x, players[i].y, &img[3], SRCPAINT);
 		}
 	}
+	//draw player
+	putimage(players[0].x, players[0].y, &img[2], SRCAND);
+	putimage(players[0].x, players[0].y, &img[1], SRCPAINT);
 	//draw bullet
 	for (int i = 1; i <= NumberOfBullet; i++)
 	{
@@ -231,6 +231,11 @@ void Game::drawall()
 			putimage(players[i].x, players[i].y, &img[5], SRCPAINT);
 		}
 	}
+	//draw score
+	RECT r[2] = { {0,0,360,30},{720,0,1080,30} };
+	char *s;
+	s = numtostr(score);
+	drawtext(_T(s), &r[0], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	EndBatchDraw();
 }
 
@@ -246,6 +251,7 @@ void Game::init()
 	//游戏初始化数据
 	NumberOfEnemy = 8;
 	NumberOfBullet = 20;
+	score = 0;
 	initplane();
 	initbullet();
 	initenemy();
@@ -478,6 +484,31 @@ void load()
 	cleardevice();
 }
 
+char *numtostr(int n)
+{
+	int m = n;
+	int j = 0;
+	if (n == 0)
+	{
+		p[0] = '0';
+		p[1] = '\0';
+		return p;
+	}
+	while (n != 0)
+	{
+		j++;
+		n = n / 10;
+	}
+	j--;
+	n = j;
+	while (m != 0)
+	{
+		p[j--] = m % 10+'0';
+		m = m / 10;
+	}
+	p[n + 1] = '\0';
+	return p;
+}
 
 
 
