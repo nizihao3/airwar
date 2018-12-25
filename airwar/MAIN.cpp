@@ -147,6 +147,19 @@ void Game::playing()
 		{
 			count_enemy = 0;
 			move_enemy();
+			for (int i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++)
+			{
+				if (players[i].x == -1 && players[i].y == -1)
+				{
+					continue;
+				}
+				if (judge(players[i], players[0]))
+				{
+					players[0].x = -1;
+					players[0].y = -1;
+					death = 0;
+				}
+			}
 		}
 		count_enemy++;
 		//bullet move
@@ -184,7 +197,10 @@ void Game::playing()
 		drawall();
 		//Sleep(8);
 	}
-
+	if (death == 0)
+	{
+		return;
+	}
 
 
 }
@@ -383,7 +399,26 @@ bool Game::judge(object enemy, object porb)
 	//printf("in judge %d", porb.type);
 	if (porb.type == 0)
 	{
-		return 0;
+		int enemy_x = enemy.x + ENEMY_W / 2;
+		int enemy_y = enemy.y + ENEMY_H / 2;
+		int plane_x = porb.x;
+		int plane_y = porb.y;
+		if (enemy_x - plane_x <= ENEMY_W / 2 && enemy_x - plane_x >= -(ENEMY_W / 2) &&enemy_y>=plane_y- ENEMY_W / 2&& enemy_y <= plane_y+ PLANE_H-1 + ENEMY_W / 2)
+		{
+			return 1;
+		}
+		else if (enemy_y >= plane_y && enemy_y <= (plane_y + PLANE_H/2-1) && enemy_x -  ENEMY_W <= plane_x + 2 * (enemy_y - plane_y)&&enemy_x + ENEMY_W >= plane_x + 2 * (enemy_y - plane_y))
+		{
+			return 1;
+		}
+		else if (enemy_y >= plane_y + PLANE_H/2-1 && enemy_y <= (plane_y + PLANE_H-1) && enemy_x -  ENEMY_W <= plane_x + 2 * (plane_y + PLANE_H-1 - enemy_y)&& enemy_x + ENEMY_W >= plane_x + 2 * (plane_y + PLANE_H-1 - enemy_y))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	else if (porb.type == 1)
 	{
@@ -400,10 +435,7 @@ bool Game::judge(object enemy, object porb)
 			return 0;
 		}
 	}
-	else
-	{
-		printf("sjcna");
-	}
+
 }
 
 int menu()
@@ -484,7 +516,7 @@ void load()
 	cleardevice();
 }
 
-char *numtostr(int n)
+char *numtostr(int n)		//将分数转化为字符形式
 {
 	int m = n;
 	int j = 0;
@@ -535,6 +567,13 @@ void MoveStar(int i)
 
 	// 画新星星
 	putpixel((int)star[i].x, star[i].y, star[i].color);
+}
+
+
+//死亡函数
+void death()
+{
+
 }
 
 //////////////////////////////
