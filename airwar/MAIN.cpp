@@ -33,7 +33,8 @@ using namespace std;
 #define SCOREDOWN				100						//分数下降
 
 //全局变量声明											///////////////////////////
-typedef struct object {
+typedef struct object 
+{
 	int x, y;
 	int type;
 }object;
@@ -59,7 +60,7 @@ char p[15];
 
 //函数声明								///////////////////////////////////////
 int menu();								//绘制菜单界面
-bool box(int);
+bool box(int);							//绘制问询界面
 void ifsave();							//绘制保存得分/是否保存界面
 bool ifrestart();						//绘制是否重新开始界面
 void readrank();						//绘制得分查询界面
@@ -67,7 +68,7 @@ void load();							//加载图片资源
 void InitStar(int);						//背景星空绘制
 void MoveStar(int);						//背景星空绘制
 char *numtostr(int);					//数字转字符串，用于打印得分/生命值
-int cmp(point, point);
+int cmp(point, point);					//比较函数
 
 //Game类									///////////////////////////////////////
 class Game
@@ -339,7 +340,9 @@ void Game::drawall()
 
 	*/
 	for (int i = 0; i < MAXSTAR; i++)
+	{
 		MoveStar(i);
+	}
 	//draw enemy
 	for (int i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++)
 	{
@@ -457,7 +460,8 @@ void Game::initenemy()
 {
 	int i;
 	//enemy		2
-	for (i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++) {
+	for (i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++) 
+	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
 		printf("%d\n", players[i].y);
@@ -469,7 +473,8 @@ void Game::inithelp()
 {
 	int i;
 	//help		3
-	for (i = NUM - 1; i >= NUM -NumberOfHelp; i--) {
+	for (i = NUM - 1; i >= NUM -NumberOfHelp; i--) 
+	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
 		printf("---%d\n", players[i].y);
@@ -651,7 +656,9 @@ void Game::pause()
 {
 	char c = _getch();
 	while (c != 27 && c != ' ' && c != 101)
+	{
 		c = _getch();
+	}
 	if (c == 101)
 	{
 		death = 0;
@@ -746,7 +753,8 @@ int menu()
 			char x = _getch();
 			if (x < 0)
 				x = _getch();
-			switch (x) {
+			switch (x) 
+			{
 			case 'w':
 			case 72:
 				if (nowj == 1)
@@ -856,7 +864,9 @@ void readrank()
 	myfile.close();
 	char c = _getch();
 	while (c != 13 && c != ' ')
+	{
 		c = _getch();
+	}
 }
 
 bool box()
@@ -1028,9 +1038,9 @@ void ifsave()
 				strcpy_s(ranks[k].name, name);
 				sort(ranks, ranks + k + 1, cmp);
 				ofstream yourfile("./save.txt");
-				for (int i = 0; i <= k; i++)
+				for (int i = 0; i < k; i++)
 				{
-					if (i < k) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
+					if (i < k - 1) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
 					else yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
 				}
 				yourfile.close();
@@ -1144,7 +1154,10 @@ void MoveStar(int i)
 {
 	// 计算新位置
 	star[i].x -= star[i].step;
-	if (star[i].x < 0)	InitStar(i);
+	if (star[i].x < 0)
+	{
+		InitStar(i);
+	}
 
 	// 画新星星
 	putpixel((int)star[i].x, star[i].y, star[i].color);
@@ -1167,12 +1180,14 @@ int main()
 		choose = menu();
 		if (choose == 1)
 		{
-				while (1) {
+				while (1) 
+				{
 					game.init();
 					game.playing();
 					game.endgame();
 					ifsave();
-					if (!ifrestart()) {
+					if (!ifrestart()) 
+					{
 						break;
 					}
 				}
