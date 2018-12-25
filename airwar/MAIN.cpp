@@ -1038,9 +1038,9 @@ void ifsave()
 				strcpy_s(ranks[k].name, name);
 				sort(ranks, ranks + k + 1, cmp);
 				ofstream yourfile("./save.txt");
-				for (int i = 0; i <= k; i++)
+				for (int i = 0; i < k; i++)
 				{
-					if (i < k) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
+					if (i < k - 1) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
 					else yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
 				}
 				yourfile.close();
