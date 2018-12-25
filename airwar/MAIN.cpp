@@ -54,12 +54,12 @@ struct point
 };
 
 int score;
-IMAGE img[16];
+IMAGE img[20];
 char p[15];
 
 //函数声明								///////////////////////////////////////
 int menu();								//绘制菜单界面
-bool box();
+bool box(int);
 void ifsave();							//绘制保存得分/是否保存界面
 bool ifrestart();						//绘制是否重新开始界面
 void readrank();						//绘制得分查询界面
@@ -809,6 +809,11 @@ void load()
 	loadimage(&img[12], _T("./pic/pausemask.png"), SWIDTH, SHEIGTHT);
 	loadimage(&img[13], _T("./pic/background.png"), SWIDTH, SHEIGTHT);
 	loadimage(&img[14], _T("./pic/rankbg.png"), SWIDTH, SHEIGTHT);
+	loadimage(&img[15], _T("./pic/ifsave.png"));
+	loadimage(&img[16], _T("./pic/ifrestart.png"));
+	loadimage(&img[17], _T("./pic/tinebox.png"));
+	loadimage(&img[18], _T("./pic/tineboxmask.png"));
+	loadimage(&img[19], _T("./pic/sorry.png"));
 	putimage(0, 0, &img[0]);
 	getchar();
 	cleardevice();
@@ -856,23 +861,61 @@ void readrank()
 
 bool box()
 {
-	int now;
-	now = 0;
+	int now;///////340 210
+	//400 360
+	//583 360
+	now = 400;
+	//print
+	putimage(340, 210, &img[15]);
+	putimage(now, 360, &img[18], SRCAND);
+	putimage(now, 360, &img[17], SRCPAINT);
 	while (1)
 	{
 		if (_kbhit())
 		{
 			char x = _getch();
-			if (x == 'y')
+			switch (x)
 			{
+			case 'y':
 				return 1;
-			}
-			else if (x == 'n')
-			{
+			case 'n':
 				return 0;
+			case 77:
+				if (now == 400)
+				{
+					now = 583;
+					putimage(340, 210, &img[15]);
+					putimage(now, 360, &img[18], SRCAND);
+					putimage(now, 360, &img[17], SRCPAINT);
+				}
+				break;
+			case 75:
+				if (now == 583)
+				{
+					now = 400;
+					putimage(340, 210, &img[15]);
+					putimage(now, 360, &img[18], SRCAND);
+					putimage(now, 360, &img[17], SRCPAINT);
+				}
+				break;
+			case 13:
+				if (now == 400)
+				{
+					return 1;
+				}
+				else if (now == 583)
+				{
+					return 0;
+				}
+				else
+				{
+					printf("error in box");
+					return 0;
+				}
 			}
 		}
 	}
+	return 0;
 }
 
 void ifsave()
@@ -906,14 +949,19 @@ void ifsave()
 	{
 		if (score == 0)
 		{
-			//抱歉，您的分数过低，无法计入排行榜
-			printf("sorry low score");
+			putimage(340, 210, &img[20]);
+			Sleep(2000);
+			printf("sorry low score\n");
 		}
 		else
 		{
 			if (box())
 			{
 				InputBox(name, 100, "请输入你的名字");
+				if (name[0] == '\0')
+				{
+					strcpy_s(name, "anonymity");
+				}
 				ofstream yourfile("./save.txt");
 				if (!yourfile)
 				{
@@ -931,6 +979,8 @@ void ifsave()
 		if (score == 0)
 		{
 			//分数太低，无法计入
+			putimage(340, 210, &img[20]);
+			Sleep(2000);
 			printf("sorry low score");
 		}
 		else
@@ -938,6 +988,10 @@ void ifsave()
 			if (box())
 			{
 				InputBox(name, 100, "请输入你的名字");
+				if (name[0] == '\0')
+				{
+					strcpy_s(name, "anonymity");
+				}
 				ranks[k].date = score;
 				strcpy_s(ranks[k].name, name);
 				sort(ranks, ranks + k + 1, cmp);
@@ -957,6 +1011,8 @@ void ifsave()
 		if (score <= ranks[9].date)
 		{
 			//分数太低，无法计入
+			putimage(340, 210, &img[20]);
+			Sleep(2000);
 			printf("sorry low score");
 		}
 		else
@@ -964,6 +1020,10 @@ void ifsave()
 			if (box())
 			{
 				InputBox(name, 100, "请输入你的名字");
+				if (name[0] == '\0')
+				{
+					strcpy_s(name, "anonymity");
+				}
 				ranks[k].date = score;
 				strcpy_s(ranks[k].name, name);
 				sort(ranks, ranks + k + 1, cmp);
@@ -978,6 +1038,62 @@ void ifsave()
 			}
 		}
 	}
+}
+
+bool ifrestart()
+{
+	int now;
+	now = 400;
+	putimage(340, 210, &img[16]);
+	putimage(now, 360, &img[18], SRCAND);
+	putimage(now, 360, &img[17], SRCPAINT);
+	while (1)
+	{
+		if (_kbhit())
+		{
+			char x = _getch();
+			switch (x)
+			{
+			case 'y':
+				return 1;
+			case 'n':
+				return 0;
+			case 77:
+				if (now == 400)
+				{
+					now = 583;
+					putimage(340, 210, &img[16]);
+					putimage(now, 360, &img[18], SRCAND);
+					putimage(now, 360, &img[17], SRCPAINT);
+				}
+				break;
+			case 75:
+				if (now == 583)
+				{
+					now = 400;
+					putimage(340, 210, &img[16]);
+					putimage(now, 360, &img[18], SRCAND);
+					putimage(now, 360, &img[17], SRCPAINT);
+				}
+				break;
+			case 13:
+				if (now == 400)
+				{
+					return 1;
+				}
+				else if (now == 583)
+				{
+					return 0;
+				}
+				else
+				{
+					printf("error in box");
+					return 0;
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 char *numtostr(int n)
@@ -1056,11 +1172,9 @@ int main()
 					game.playing();
 					game.endgame();
 					ifsave();
-					/*
-					ifsave();
 					if (!ifrestart()) {
 						break;
-					}*/
+					}
 				}
 		}
 		else if (choose == 2)
