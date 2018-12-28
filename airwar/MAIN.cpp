@@ -61,7 +61,7 @@ char	p[15];
 
 //函数声明								///////////////////////////////////////
 int menu();								//绘制菜单界面
-bool box(int);							//绘制问询界面
+bool box();								//绘制问询界面
 void ifsave();							//绘制保存得分/是否保存界面
 bool ifrestart();						//绘制是否重新开始界面
 void readrank();						//绘制得分查询界面
@@ -657,12 +657,12 @@ void Game::endgame()
 	int times = 30;
 	drawall();
 	mciSendString("stop playingmusic", NULL, 0, NULL);
+	mciSendString("play deathmusic", NULL, 0, NULL);
 	while (times--)
 	{
 		Sleep(100);
 		drawall();
 	}
-	mciSendString("play deathmusic", NULL, 0, NULL);
 	BeginBatchDraw();
 	putimage(0, 0, &img[8], SRCAND);
 	putimage(0, 0, &img[7], SRCPAINT);
@@ -1128,8 +1128,7 @@ int main()
 	int choose;
 	srand((unsigned)time(NULL));
 	Game game;
-	printf("测试");
-	initgraph(SWIDTH, SHEIGTHT, SHOWCONSOLE);
+	initgraph(SWIDTH, SHEIGTHT);
 	load();
 	while (1)
 	{
