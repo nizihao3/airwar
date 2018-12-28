@@ -9,8 +9,8 @@
 #include<fstream>
 #include<stdlib.h>
 #include<algorithm>
-//#include<mmsystem.h>
-//#pragma comment(lib,"WINMM.lib")
+#include<mmsystem.h>
+#pragma comment(lib,"WINMM.lib")
 using namespace std;
 
 //宏定义													////////////////////////////
@@ -35,8 +35,9 @@ using namespace std;
 //全局变量声明											///////////////////////////
 typedef struct object 
 {
-	int x, y;
-	int type;
+	int		x;
+	int		y;
+	int		type;
 }object;
 
 struct STAR
@@ -50,13 +51,13 @@ STAR star[MAXSTAR];
 
 struct point
 {
-	char name[100];
-	int date;
+	char	name[100];
+	int		date;
 };
 
-int score;
-IMAGE img[20];
-char p[15];
+int		score;
+IMAGE	img[20];
+char	p[15];
 
 //函数声明								///////////////////////////////////////
 int menu();								//绘制菜单界面
@@ -82,7 +83,6 @@ public:
 	int NowEnemy;						//敌人数目变化参数
 	int NowHelp;						//道具数目变化参数
 	bool death;							//标记死亡	1 存活	0 死亡
-	int cnt;
 
 	//函数声明							///////////////////////////////////////
 	void initplane();					//初始化玩家
@@ -121,7 +121,7 @@ void Game::playing()
 	int help_speed = 2;					//道具速度
 	int bullet = 0;						//将要发出的子弹数目
 	int bulletrate = 30;				//子弹频率
-	//count计数变量		////
+	//count计数变量						////
 	int countrate = 0;
 	int count_bullet = 0;
 	int count_enemy = 0;
@@ -138,22 +138,15 @@ void Game::playing()
 			case 'w':
 			case 's':
 			case 'a':
-			case 'd':
-				move_plane(x); break;
+			case 'd':	move_plane(x);			break;
 			case 72:
 			case 80:
 			case 75:
-			case 77:
-				move_plane((int)x); break;
-			case ' ':
-				bullet++;
-				break;
-			case 27:
-				printhelp();
-				pause();
-			default:break;
+			case 77:	move_plane((int)x);		break;
+			case ' ':	bullet++;				break;
+			case 27:	printhelp();			pause();
+			default:	break;
 			}
-		//	pause();
 		}
 
 		//enemy move					///////////////////////////////////////敌人移动及碰撞检测
@@ -168,9 +161,7 @@ void Game::playing()
 					continue;
 				}
 				if (judge(players[i], players[0]))
-				{/*
-					players[0].x = -1;
-					players[0].y = -1;*/
+				{
 					players[i].x = -1;
 					players[i].y = -1;
 					players[0].type -= HPDOWN;
@@ -196,12 +187,11 @@ void Game::playing()
 					continue;
 				}
 				if (judge(players[i], players[0]))
-				{/*
-					players[0].x = -1;
-					players[0].y = -1;*/
+				{
 					players[i].x = -1;
 					players[i].y = -1;
 					players[0].type += HPHELP;
+					//限制生命值上限
 					if (players[0].type > HPMAX)
 					{
 						players[0].type = HPMAX;
@@ -248,7 +238,6 @@ void Game::playing()
 					{
 						continue;
 					}
-					//printf("in playing %d", players[i].type);
 					if (judge(players[j], players[i]))
 					{
 						players[j].x = -1;
@@ -264,7 +253,6 @@ void Game::playing()
 					{
 						continue;
 					}
-					//printf("in playing %d", players[j].type);
 					if (judge(players[j], players[i]))
 					{
 						players[j].x = -1;
@@ -320,25 +308,6 @@ void Game::drawall()
 	cleardevice();
 	BeginBatchDraw();
 	//draw stars
-	/*
-	static int countstar = 0;
-	int starrate = 15;
-	if (countstar == starrate)
-	{
-		static int k = 0;
-		printf("%d\n",k++);
-		for (int i = 0; i < MAXSTAR; i++)
-			MoveStar(i);
-		countstar = 0;
-	}
-	else
-	{
-		for (int i = 0; i < MAXSTAR; i++)
-			putpixel((int)star[i].x, star[i].y, star[i].color);
-	}
-	countstar++;
-
-	*/
 	for (int i = 0; i < MAXSTAR; i++)
 	{
 		MoveStar(i);
@@ -353,7 +322,6 @@ void Game::drawall()
 		}
 	}
 	//draw help
-
 	for (int i = NUM - 1; i >= NUM - NumberOfHelp; i--)
 	{
 		if (players[i].x != -1 && players[i].y != -1)
@@ -362,7 +330,6 @@ void Game::drawall()
 			putimage(players[i].x, players[i].y, &img[9], SRCPAINT);
 		}
 	}
-
 	//draw player
 	if (players[0].type >= 0)
 	{
@@ -379,7 +346,7 @@ void Game::drawall()
 		}
 	}
 	//draw score
-	RECT r[8] = { {60,0,120,30} ,{120,0,180,30},{200,0,260,30}, {260,0,320,30}, {360,0,720,30}, {780,0,810,30},{810,0,815,30},{815,0,855,30} };
+	RECT r[5] = { {60,0,120,30},{120,0,180,30},{200,0,260,30},{260,0,320,30},{360,0,720,30} };
 	char *s;
 	char *life;
 	if (players[0].type > 0)
@@ -397,30 +364,6 @@ void Game::drawall()
 	drawtext(_T("得分:"), &r[0], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	drawtext(_T(s), &r[1], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	drawtext(_T("按ESC以暂停/获得帮助"), &r[4], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-	if (death == 1)
-	{
-		cnt+=5;
-		char *second;
-		char *milesecond;
-		if (cnt < 1000)
-		{
-			second = numtostr(0);
-			drawtext(_T(second), &r[5], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-			milesecond = numtostr((int)(cnt / 100));
-			drawtext(_T(milesecond), &r[7], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		}
-		else
-		{
-			second = numtostr((int)(cnt / 1000));
-			drawtext(_T(second), &r[5], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-			milesecond = numtostr((int)((cnt / 100) % 10));
-			drawtext(_T(milesecond), &r[7], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		}
-		
-		drawtext(_T("."), &r[6], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		
-
-	}
 	EndBatchDraw();
 }
 
@@ -439,18 +382,17 @@ void Game::init()
 	NumberOfHelp = 1;
 	NowEnemy = 7;
 	NowHelp = 1;
-	score = 600;
+	score = 0;
 	initplane();
 	initbullet();
 	initenemy();
 	inithelp();
 	death = 1;
-	cnt = 1;
+	mciSendString("play playingmusic repeat from 0", NULL, 0, NULL);
 }
 
 void Game::initplane()
 {
-	//player	0
 	players[0].x = 0 + rand() % 100;
 	players[0].y = SHEIGTHT / 2;
 	players[0].type = 100;
@@ -459,12 +401,10 @@ void Game::initplane()
 void Game::initenemy()
 {
 	int i;
-	//enemy		2
 	for (i = NumberOfBullet + 1; i <= NumberOfBullet + NumberOfEnemy; i++) 
 	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
-		printf("%d\n", players[i].y);
 		players[i].type = 2;
 	}
 }
@@ -472,12 +412,10 @@ void Game::initenemy()
 void Game::inithelp()
 {
 	int i;
-	//help		3
 	for (i = NUM - 1; i >= NUM -NumberOfHelp; i--) 
 	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
-		printf("---%d\n", players[i].y);
 		players[i].type = 3;
 	}
 }
@@ -485,7 +423,6 @@ void Game::inithelp()
 void Game::initbullet()
 {
 	int i;
-	//bullet	1
 	for (i = 1; i <= NumberOfBullet; i++)
 	{
 		players[i].x = -1;
@@ -500,7 +437,6 @@ void Game::newenemy()
 	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
-		printf("new_enemy->%d\n", players[i].y);
 		players[i].type = 2;
 	}
 }
@@ -511,21 +447,23 @@ void Game::newhelp()
 	{
 		players[i].x = rand() % 400 + SWIDTH;
 		players[i].y = rand() % (SHEIGTHT - PLANE_H - 30) + PLANE_H / 2 - ENEMY_H / 2 + 30;
-		printf("new_help->%d\n", players[i].y);
 		players[i].type = 3;
 	}
 }
 
 void Game::move_plane(char x)
 {
-	int dir[4][2] = { {0,-PLANESPEED},{0,PLANESPEED},{-PLANESPEED,0},{PLANESPEED,0} };//w 0//s 1//a 2//d 3
+	int dir[4][2] = { {0,-PLANESPEED}	//w 0
+					 ,{0,PLANESPEED}	//s	1
+					 ,{-PLANESPEED,0}	//a 2
+					 ,{PLANESPEED,0} };	//d 3
 	int dirx=0;
 	switch (x)
 	{
-	case 'w':dirx = 0; break;
-	case 's':dirx = 1; break;
-	case 'a':dirx = 2; break;
-	case 'd':dirx = 3; break;
+	case 'w':	dirx = 0;	break;
+	case 's':	dirx = 1;	break;
+	case 'a':	dirx = 2;	break;
+	case 'd':	dirx = 3;	break;
 	}
 	players[0].x += dir[dirx][0];
 	players[0].y += dir[dirx][1];
@@ -549,14 +487,17 @@ void Game::move_plane(char x)
 
 void Game::move_plane(int x)
 {
-	int dir[4][2] = { {0,-PLANESPEED},{0,PLANESPEED},{-PLANESPEED,0},{PLANESPEED,0} };//w 0//s 1//a 2//d 3
+	int dir[4][2] = { {0,-PLANESPEED}	//w 0
+					 ,{0,PLANESPEED}	//s	1
+					 ,{-PLANESPEED,0}	//a 2
+					 ,{PLANESPEED,0} };	//d 3
 	int dirx = 0;
 	switch (x)
 	{
-	case 72:dirx = 0; break;
-	case 80:dirx = 1; break;
-	case 75:dirx = 2; break;
-	case 77:dirx = 3; break;
+	case 72:	dirx = 0;	break;
+	case 80:	dirx = 1;	break;
+	case 75:	dirx = 2;	break;
+	case 77:	dirx = 3;	break;
 	}
 	players[0].x += dir[dirx][0];
 	players[0].y += dir[dirx][1];
@@ -667,7 +608,6 @@ void Game::pause()
 
 bool Game::judge(object enemy, object porb)
 {
-	//printf("in judge %d", porb.type);
 	if (porb.type >= 0)
 	{
 		int enemy_x = enemy.x + ENEMY_W / 2;
@@ -716,16 +656,19 @@ void Game::endgame()
 {
 	int times = 30;
 	drawall();
+	mciSendString("stop playingmusic", NULL, 0, NULL);
 	while (times--)
 	{
 		Sleep(100);
 		drawall();
 	}
+	mciSendString("play deathmusic", NULL, 0, NULL);
 	BeginBatchDraw();
 	putimage(0, 0, &img[8], SRCAND);
 	putimage(0, 0, &img[7], SRCPAINT);
 	EndBatchDraw();
 	while (getchar() != '\n');
+	mciSendString("stop deathmusic", NULL, 0, NULL);
 }
 
 void Game::printhelp()
@@ -736,7 +679,7 @@ void Game::printhelp()
 
 int menu()
 {
-	int nowj;//当前选项框所在位置右下角纵坐标
+	int nowj;	//当前选项框所在位置右下角纵坐标
 	RECT r[3] = { {661, 300, SWIDTH, 370},{661, 370, SWIDTH, 440},{661, 440, SWIDTH, 510} };
 	putimage(0, 0, &img[13]);
 	settextstyle(28, 0, _T("微软雅黑"));
@@ -744,8 +687,6 @@ int menu()
 	drawtext(_T("> 开始游戏PLAY <"), &r[0], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	drawtext(_T("查看排名READ"), &r[1], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	drawtext(_T("退出游戏EXIT"), &r[2], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-//	settextstyle(32, 0, _T("Consolas"));
-//	outtextxy(0, 0, _T("AB测试"));
 	while (1)
 	{
 		if (_kbhit())
@@ -769,7 +710,6 @@ int menu()
 					drawtext(_T("> 查看排名READ <"), &r[1], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 					drawtext(_T("     退出游戏EXIT     "), &r[2], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 				}
-				printf("W or Up is pressed\n"); 
 				break;
 			case 's':
 			case 80:
@@ -785,15 +725,12 @@ int menu()
 					drawtext(_T("     查看排名READ     "), &r[1], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 					drawtext(_T("> 退出游戏EXIT <"), &r[2], DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 				}
-				printf("S or Down is pressed\n"); 
 				break;
 			case 'k':
 			case 32:
 			case 13:
 				return nowj + 1;
-			default :
-				printf("%d", x);
-				break;
+			default :	break;
 			}
 		}
 	}
@@ -822,8 +759,20 @@ void load()
 	loadimage(&img[17], _T("./pic/tinebox.png"));
 	loadimage(&img[18], _T("./pic/tineboxmask.png"));
 	loadimage(&img[19], _T("./pic/sorry.png"));
+
+
+	//music注释
+	mciSendString("open ./music/enter.mp3 alias entermusic", NULL, 0, NULL);
+	mciSendString("open ./music/playing.mp3 alias playingmusic", NULL, 0, NULL);
+	mciSendString("open ./music/death.mp3 alias deathmusic", NULL, 0, NULL);
+
+	//开始播放enter_music
+	mciSendString("play entermusic", NULL, 0, NULL);
+
 	putimage(0, 0, &img[0]);
 	getchar();
+	mciSendString("stop entermusic", NULL, 0, NULL);
+	mciSendString("close entermusic", NULL, 0, NULL);
 	cleardevice();
 }
 
@@ -871,11 +820,9 @@ void readrank()
 
 bool box()
 {
-	int now;///////340 210
-	//400 360
-	//583 360
+	int now;
 	now = 400;
-	//print
+	//打印界面
 	putimage(340, 210, &img[15]);
 	putimage(now, 360, &img[18], SRCAND);
 	putimage(now, 360, &img[17], SRCPAINT);
@@ -919,7 +866,6 @@ bool box()
 				}
 				else
 				{
-					printf("error in box");
 					return 0;
 				}
 			}
@@ -935,7 +881,7 @@ void ifsave()
 	char str[100];
 	int k = 0;
 	char name[100];
-	char rank[10][100] = { {"No.01"},{"No.02"},{"No.03"},{"No.04"},{"No.05"},{"No.06"},{"No.07"},{"No.08"},{"No.09"},{"No.10"} };
+	char rank[10][7] = { {"No.01"},{"No.02"},{"No.03"},{"No.04"},{"No.05"},{"No.06"},{"No.07"},{"No.08"},{"No.09"},{"No.10"} };
 	ifstream myfile("./save.txt");
 	if (!myfile)
 	{
@@ -961,7 +907,7 @@ void ifsave()
 		{
 			putimage(340, 210, &img[20]);
 			Sleep(2000);
-			printf("sorry low score\n");
+			cout << "sorry low score" << endl;
 		}
 		else
 		{
@@ -991,7 +937,7 @@ void ifsave()
 			//分数太低，无法计入
 			putimage(340, 210, &img[20]);
 			Sleep(2000);
-			printf("sorry low score");
+			cout << "sorry low score" << endl;
 		}
 		else
 		{
@@ -1008,8 +954,14 @@ void ifsave()
 				ofstream yourfile("./save.txt");
 				for (int i = 0; i <= k; i++)
 				{
-					if (i < k) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
-					else yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
+					if (i < k)
+					{
+						yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
+					}
+					else
+					{
+						yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
+					}
 				}
 				yourfile.close();
 				readrank();
@@ -1023,7 +975,7 @@ void ifsave()
 			//分数太低，无法计入
 			putimage(340, 210, &img[20]);
 			Sleep(2000);
-			printf("sorry low score");
+			cout << "sorry low score" << endl;
 		}
 		else
 		{
@@ -1040,8 +992,14 @@ void ifsave()
 				ofstream yourfile("./save.txt");
 				for (int i = 0; i < k; i++)
 				{
-					if (i < k - 1) yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
-					else yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
+					if (i < k - 1)
+					{
+						yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name << endl;
+					}
+					else
+					{
+						yourfile << rank[i] << "-" << ranks[i].date << "-" << ranks[i].name;
+					}
 				}
 				yourfile.close();
 				readrank();
@@ -1097,7 +1055,6 @@ bool ifrestart()
 				}
 				else
 				{
-					printf("error in box");
 					return 0;
 				}
 			}
@@ -1174,7 +1131,6 @@ int main()
 	printf("测试");
 	initgraph(SWIDTH, SHEIGTHT, SHOWCONSOLE);
 	load();
-	//	getchar();
 	while (1)
 	{
 		choose = menu();
@@ -1194,7 +1150,7 @@ int main()
 		}
 		else if (choose == 2)
 		{
-				readrank();
+			readrank();
 		}
 		else if (choose == 3)
 		{
@@ -1202,53 +1158,6 @@ int main()
 		}
 	}
 	closegraph();
+	mciSendString("close all", NULL, 0, NULL);
 	return 0;
 }
-
-
-
-///////////////////////////////////////////
-/*
-
-
-
-if (_kbhit())
-		{
-			char x = _getch();
-			if (x < 0)
-				x = _getch();
-			switch (x) {
-			case 'w':
-			case 72:
-				printf("wwwwww"); break;
-			case 's':
-			case 80:
-				printf("ssssss"); break;
-			case 'a':
-			case 75:
-				printf("aaaaaa"); break;
-			case 'd':
-			case 77:
-				printf("dddddd"); break;
-			case 'k':
-			case 32:
-				printf("space!"); break;
-			default :
-				printf("%d", x);
-			}
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
